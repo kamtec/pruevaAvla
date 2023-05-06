@@ -9,6 +9,9 @@ import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class JwtUtils {
 	
 	 private static final String SECRET_KEY = "avla1234";
