@@ -1,7 +1,7 @@
 package com.avla.prueba.controller;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -72,7 +72,7 @@ public class UsuarioController {
 		UsuarioResponseDTO usuarioCreadoDTO = new UsuarioResponseDTO();
 		log.info("generando respuesta con token");
 		usuarioCreadoDTO.setId(us.getIdUsuario());
-		usuarioCreadoDTO.setCreated(LocalDateTime.now());
+		usuarioCreadoDTO.setCreated(new Date());
 		usuarioCreadoDTO.setToken(jwt.generateToken(us.getEmail()));
 		log.info("token generado");
 		Token token = new Token();
@@ -114,7 +114,7 @@ public class UsuarioController {
 		UsuarioResponseDTO usuarioActualizadoDTO = new UsuarioResponseDTO();
 		log.info("generando respuesta con token");
 		usuarioActualizadoDTO.setId(us.getIdUsuario());
-		usuarioActualizadoDTO.setModified(LocalDateTime.now());
+		usuarioActualizadoDTO.setModified(new Date());
 		usuarioActualizadoDTO.setToken(jwt.generateToken(us.getEmail()));
 		log.info("token generado");
 		Token token = new Token();
