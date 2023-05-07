@@ -100,7 +100,7 @@ public class UsuarioController {
 		Optional<Telefono> telefonoEncontradoPorId = telService.encontrarTelefonoPorIdParaActualizar(telefonoActs.get(i).getIdTelefono());
 		if(telefonoEncontradoPorId.isPresent()) {
 	    telefonoActs.get(i).setIdTelefono(telefonoEncontradoPorId.get().getIdTelefono());
-		telefonoActs.get(i).setUsuario(telefonoEncontradoPorId.get().getUsuario());
+		telefonoActs.get(i).setUsuario(usuario);
 	    Telefono telefonoActualizado = telService.actualizarTelefono(telefonoActs.get(i));
 		} else {
 	    	throw new IllegalArgumentException("El telefono del usuario no existe, favor crearlo.");
