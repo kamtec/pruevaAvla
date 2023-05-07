@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class ValidarPasswordUtils {
 
-	 private static final String PASSWORD_PATTERN = "^(?=.*[A-Z])(?=.*\\d)(?=.*[@#$%^&+=!])(?=\\S+$).{8,}$";
+	 private static final String PASSWORD_PATTERN ="^(?=.*[A-Z])(?=.*\\d).+$";
 
 	    public boolean validate(String password) {
 	        Pattern pattern = Pattern.compile(PASSWORD_PATTERN);
