@@ -91,6 +91,11 @@ public class UsuarioController {
     public ResponseEntity<UsuarioResponseDTO> actualizarUsuario(@ApiParam(value = "informacion del usuario, esta es email, contraseña, nombre y telefonos", required = true)  @Valid @RequestBody Usuario usuario){
 	Optional<Usuario> usuarioEncontradoPorId = service.encontrarUsuarioPorIdAactualizar(usuario.getIdUsuario());
 		if(usuarioEncontradoPorId.isPresent()) {
+			if(!validarPass.validate(usuario.getPassword())) {
+				throw new IllegalArgumentException("El fromato de la contraseña no es valido");
+			}else {
+			Optional<Usuario> usuarioEncontrado = service.encontrarUsuarioPorCorreo(usuario.getEmail());
+			if(!usuarioEncontrado.isPresent()) {
 	    log.info("actualizando usuario");
 		Usuario us =service.actualizarUsuario(usuario);
 		log.info("usuario actualizado, el id de este usuario es "+us.getIdUsuario());
@@ -118,7 +123,11 @@ public class UsuarioController {
 		log.info("token guardado");
 		return new ResponseEntity<UsuarioResponseDTO>(usuarioActualizadoDTO, HttpStatus.OK);
 	     }else {
+	 		throw new IllegalArgumentException("El correo ya se encuentra registrado.");
+		}	
+		}
+		}else {
 		throw new IllegalArgumentException("El usuario no existe, favor crearlo.");
 		}
-    }
+	}
 }
