@@ -42,4 +42,9 @@ public class TelefonoServiceImpl implements TelefonoService{
 	telefonoRepo.deleteById(Id);
 	}
 
+	@Override
+	public Optional<Telefono> encontrarTelefonoPorIdParaActualizar(Long Id) {
+		return telefonoRepo.findById(Id);
+	}
+
 }

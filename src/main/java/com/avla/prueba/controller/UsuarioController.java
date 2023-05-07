@@ -34,7 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RestController
 @RequestMapping("/usuario")
-@Api(value = "API de generacion de usuarios", description = "Esta es una API de prueba de generacion de usuarios que ademas genera tokens")
+@Api(value = "API de generacion de usuarios")
 public class UsuarioController {
 	
 	@Autowired
@@ -53,7 +53,7 @@ public class UsuarioController {
 	private ValidarPasswordUtils validarPass;
 	
 	@PostMapping("/agregar")
-	@ApiOperation(value = "Agregar un usuario", notes = "Agrega un usuario y genera token a partir de el")
+	@ApiOperation(value = "Agregar un usuario", notes = "Agrega un usuario y genera token a partir de el", tags = {"usuarios"})
 	public ResponseEntity<UsuarioResponseDTO> agregarUsuario(@ApiParam(value = "informacion del usuario, esta es email, contraseña, nombre y telefonos", required = true)  @Valid @RequestBody Usuario usuario){
 		if(!validarPass.validate(usuario.getPassword())) {
 			throw new IllegalArgumentException("El fromato de la contraseña no es valido");
@@ -87,7 +87,7 @@ public class UsuarioController {
 	}
 	
 	@PutMapping("/actualizar")
-	@ApiOperation(value = "Actualiza un usuario", notes = "Actualiza un usuario y genera token a partir de el")
+	@ApiOperation(value = "Actualiza un usuario", notes = "Actualiza un usuario y genera token a partir de el", tags = {"usuarios"})
     public ResponseEntity<UsuarioResponseDTO> actualizarUsuario(@ApiParam(value = "informacion del usuario, esta es email, contraseña, nombre y telefonos", required = true)  @Valid @RequestBody Usuario usuario){
 	Optional<Usuario> usuarioEncontradoPorId = service.encontrarUsuarioPorIdAactualizar(usuario.getIdUsuario());
 		if(usuarioEncontradoPorId.isPresent()) {
@@ -97,8 +97,14 @@ public class UsuarioController {
 		List<Telefono> telefonoActs = new ArrayList<Telefono>();
 		telefonoActs.addAll(usuario.phones);
 		for(int i = 0; i < telefonoActs.size(); i++) {
-		telefonoActs.get(i).setUsuario(usuario);
+		Optional<Telefono> telefonoEncontradoPorId = telService.encontrarTelefonoPorIdParaActualizar(telefonoActs.get(i).getIdTelefono());
+		if(telefonoEncontradoPorId.isPresent()) {
+	    telefonoActs.get(i).setIdTelefono(telefonoEncontradoPorId.get().getIdTelefono());
+		telefonoActs.get(i).setUsuario(telefonoEncontradoPorId.get().getUsuario());
 	    Telefono telefonoActualizado = telService.actualizarTelefono(telefonoActs.get(i));
+		} else {
+	    	throw new IllegalArgumentException("El telefono del usuario no existe, favor crearlo.");
+	    }
 		}
 		UsuarioResponseDTO usuarioActualizadoDTO = new UsuarioResponseDTO();
 		log.info("generando respuesta con token");
