@@ -27,7 +27,7 @@ public class Telefono {
 	
 	@JsonIgnore
 	@ManyToOne
-	@JoinColumn(name = "idUsuario", nullable = false, foreignKey = @ForeignKey(name = "FK_usuario_telefono"))
+	@JoinColumn(name = "idUsuario", foreignKey = @ForeignKey(name = "FK_usuario_telefono"))
 	public Usuario usuario;
 	
 	@Column(name = "number", nullable = false, length = 9)

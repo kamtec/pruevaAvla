@@ -1,6 +1,8 @@
 package com.avla.prueba.controller;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import javax.validation.Valid;
@@ -14,9 +16,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.avla.prueba.domain.Telefono;
 import com.avla.prueba.domain.Token;
 import com.avla.prueba.domain.Usuario;
 import com.avla.prueba.dto.UsuarioResponseDTO;
+import com.avla.prueba.service.TelefonoService;
 import com.avla.prueba.service.TokenService;
 import com.avla.prueba.service.UsuarioService;
 import com.avla.prueba.utils.JwtUtils;
@@ -37,6 +41,9 @@ public class UsuarioController {
 	private UsuarioService service;
 	
 	@Autowired
+	private TelefonoService telService;
+	
+	@Autowired
 	private TokenService tService;
 	
 	@Autowired
@@ -49,13 +56,19 @@ public class UsuarioController {
 	@ApiOperation(value = "Agregar un usuario", notes = "Agrega un usuario y genera token a partir de el")
 	public ResponseEntity<UsuarioResponseDTO> agregarUsuario(@ApiParam(value = "informacion del usuario, esta es email, contraseña, nombre y telefonos", required = true)  @Valid @RequestBody Usuario usuario){
 		if(!validarPass.validate(usuario.getPassword())) {
-			throw new IllegalArgumentException("El fromato de la contraseña no se valido");
+			throw new IllegalArgumentException("El fromato de la contraseña no es valido");
 		}else {
 		Optional<Usuario> usuarioEncontrado = service.encontrarUsuarioPorCorreo(usuario.getEmail());
 		if(!usuarioEncontrado.isPresent()) {
 		log.info("creando usuario");
 		Usuario us = service.agregarUsuario(usuario);
 		log.info("usuario creado con el id "+us.getIdUsuario());
+		List<Telefono> telefonos = new ArrayList<Telefono>();
+		telefonos.addAll(usuario.phones);
+		for(int i = 0; i < telefonos.size(); i++) {
+		telefonos.get(i).setUsuario(usuario);
+	    Telefono telefonoGuardado = telService.agregarTelefono(telefonos.get(i));
+		}
 		UsuarioResponseDTO usuarioCreadoDTO = new UsuarioResponseDTO();
 		log.info("generando respuesta con token");
 		usuarioCreadoDTO.setId(us.getIdUsuario());
@@ -81,6 +94,12 @@ public class UsuarioController {
 	    log.info("actualizando usuario");
 		Usuario us =service.actualizarUsuario(usuario);
 		log.info("usuario actualizado, el id de este usuario es "+us.getIdUsuario());
+		List<Telefono> telefonoActs = new ArrayList<Telefono>();
+		telefonoActs.addAll(usuario.phones);
+		for(int i = 0; i < telefonoActs.size(); i++) {
+		telefonoActs.get(i).setUsuario(usuario);
+	    Telefono telefonoActualizado = telService.actualizarTelefono(telefonoActs.get(i));
+		}
 		UsuarioResponseDTO usuarioActualizadoDTO = new UsuarioResponseDTO();
 		log.info("generando respuesta con token");
 		usuarioActualizadoDTO.setId(us.getIdUsuario());
