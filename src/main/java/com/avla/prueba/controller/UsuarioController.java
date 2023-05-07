@@ -24,7 +24,7 @@ import com.avla.prueba.service.TelefonoService;
 import com.avla.prueba.service.TokenService;
 import com.avla.prueba.service.UsuarioService;
 import com.avla.prueba.utils.JwtUtils;
-import com.avla.prueba.utils.ValidarPasswordUtils;
+import com.avla.prueba.utils.ValidarUtils;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -50,12 +50,15 @@ public class UsuarioController {
 	private JwtUtils jwt;
 	
 	@Autowired
-	private ValidarPasswordUtils validarPass;
+	private ValidarUtils validar;
 	
 	@PostMapping("/agregar")
 	@ApiOperation(value = "Agregar un usuario", notes = "Agrega un usuario y genera token a partir de el", tags = {"usuarios"})
 	public ResponseEntity<UsuarioResponseDTO> agregarUsuario(@ApiParam(value = "informacion del usuario, esta es email, contraseña, nombre y telefonos", required = true)  @Valid @RequestBody Usuario usuario){
-		if(!validarPass.validate(usuario.getPassword())) {
+		if(!validar.ValidateEmail(usuario.getEmail())) {
+			 throw new IllegalArgumentException("El fromato del email no es valido");
+		}
+		if(!validar.validate(usuario.getPassword())) {
 			throw new IllegalArgumentException("El fromato de la contraseña no es valido");
 		}else {
 		Optional<Usuario> usuarioEncontrado = service.encontrarUsuarioPorCorreo(usuario.getEmail());
@@ -90,12 +93,13 @@ public class UsuarioController {
 	@ApiOperation(value = "Actualiza un usuario", notes = "Actualiza un usuario y genera token a partir de el", tags = {"usuarios"})
     public ResponseEntity<UsuarioResponseDTO> actualizarUsuario(@ApiParam(value = "informacion del usuario, esta es email, contraseña, nombre y telefonos", required = true)  @Valid @RequestBody Usuario usuario){
 	Optional<Usuario> usuarioEncontradoPorId = service.encontrarUsuarioPorIdAactualizar(usuario.getIdUsuario());
-		if(usuarioEncontradoPorId.isPresent()) {
-			if(!validarPass.validate(usuario.getPassword())) {
+	  if(usuarioEncontradoPorId.isPresent()) {
+		  if(!validar.ValidateEmail(usuario.getEmail())) {
+			 throw new IllegalArgumentException("El fromato del email no es valido");
+			}
+			if(!validar.validate(usuario.getPassword())) {
 				throw new IllegalArgumentException("El fromato de la contraseña no es valido");
 			}else {
-			Optional<Usuario> usuarioEncontrado = service.encontrarUsuarioPorCorreo(usuario.getEmail());
-			if(!usuarioEncontrado.isPresent()) {
 	    log.info("actualizando usuario");
 		Usuario us =service.actualizarUsuario(usuario);
 		log.info("usuario actualizado, el id de este usuario es "+us.getIdUsuario());
@@ -121,10 +125,7 @@ public class UsuarioController {
 		token.setToken(usuarioActualizadoDTO.getToken());
 		tService.agregarToken(token);
 		log.info("token guardado");
-		return new ResponseEntity<UsuarioResponseDTO>(usuarioActualizadoDTO, HttpStatus.OK);
-	     }else {
-	 		throw new IllegalArgumentException("El correo ya se encuentra registrado.");
-		}	
+		return new ResponseEntity<UsuarioResponseDTO>(usuarioActualizadoDTO, HttpStatus.OK);	
 		}
 		}else {
 		throw new IllegalArgumentException("El usuario no existe, favor crearlo.");

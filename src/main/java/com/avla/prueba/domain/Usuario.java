@@ -28,7 +28,7 @@ public class Usuario {
 	@Column(name = "name", nullable = false, length = 70)
 	public String name;
 	
-	@Email(message="el email ingresado no es valido")
+	@Email
 	@Column(name = "email", nullable = false, length = 70)
 	public String email;
 	
