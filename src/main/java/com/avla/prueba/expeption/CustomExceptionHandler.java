@@ -17,5 +17,11 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 		ExceptionResponse er = new ExceptionResponse(new Date(), ex.getMessage(), request.getDescription(false));
 		return new ResponseEntity<ExceptionResponse>(er, HttpStatus.BAD_REQUEST);
 	}
+	
+	@ExceptionHandler(RuntimeException.class)
+	public final ResponseEntity<ExceptionResponse> manejarTodasExcepcionesNotFound(NotFoundException ex, WebRequest request){
+		ExceptionResponse er = new ExceptionResponse(new Date(), ex.getMessage(), request.getDescription(false));
+		return new ResponseEntity<ExceptionResponse>(er, HttpStatus.NOT_FOUND);
+	}
 
 }

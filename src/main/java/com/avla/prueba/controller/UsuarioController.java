@@ -10,6 +10,8 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,6 +22,7 @@ import com.avla.prueba.domain.Token;
 import com.avla.prueba.domain.Usuario;
 import com.avla.prueba.dto.UsuarioResponseDTO;
 import com.avla.prueba.expeption.BadRequestException;
+import com.avla.prueba.expeption.NotFoundException;
 import com.avla.prueba.service.TelefonoService;
 import com.avla.prueba.service.TokenService;
 import com.avla.prueba.service.UsuarioService;
@@ -130,5 +133,28 @@ public class UsuarioController {
 		}else {
 		throw new BadRequestException("El usuario no existe, favor crearlo.");
 		}
+	}
+	
+	@GetMapping("/listar-usuarios")
+	@ApiOperation(value = "Obtiene los usuarios", notes = "Obtiene los usuarios con sus telefonos asociados", tags = {"usuarios"})
+	public ResponseEntity<List<Usuario>> listarUsuarios(){
+		List<Usuario> lista = service.consultarUsuarios();
+		if(lista.size() != 0) {
+		return new ResponseEntity<List<Usuario>>(lista, HttpStatus.OK);
+		}else {
+		throw new NotFoundException("No existen usuarios registrados.");	
+		}
+	}
+	
+	@GetMapping("/encontrar-usuario/{id}")
+	@ApiOperation(value = "Obtiene un usuario por su id", notes = "Obtiene un usuario por su id con sus telefonos asociados", tags = {"usuarios"})
+	public ResponseEntity<Usuario> listarPorId(@PathVariable("id") Long id){
+		Usuario usuario = service.encontrarUsuarioPorId(id);
+		if(usuario.getIdUsuario() == null) {
+	 throw new NotFoundException("No existe usuario registrado con el id "+id+".");		
+		}
+		else {
+		return new ResponseEntity<Usuario>(usuario, HttpStatus.OK); 
+		}	
 	}
 }
