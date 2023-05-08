@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.avla.prueba.domain.Telefono;
 import com.avla.prueba.domain.Token;
 import com.avla.prueba.domain.Usuario;
@@ -35,7 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RestController
 @RequestMapping("/usuario")
-@Api(value = "API de generacion de usuarios")
+@Api(tags = {"usuarios"})
 public class UsuarioController {
 	
 	@Autowired
